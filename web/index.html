@@ -1,0 +1,2284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cursor 账户管理</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --primary: #0f766e;
+  --primary-hover: #0d9488;
+  --primary-ink: #134e4a;
+  --primary-light: #ccfbf1;
+  --accent: #0369a1;
+  --bg: #f4f6f8;
+  --bg-subtle: #eef2f6;
+  --card: #ffffff;
+  --text: #0f172a;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  --border: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --success: #15803d;
+  --success-bg: #dcfce7;
+  --warning: #b45309;
+  --warning-bg: #fef3c7;
+  --danger: #b91c1c;
+  --danger-bg: #fee2e2;
+  --shadow: 0 1px 2px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.06);
+  --shadow-lg: 0 16px 40px rgba(15, 23, 42, 0.12);
+  --radius: 14px;
+  --radius-sm: 10px;
+  --font: "IBM Plex Sans", "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font);
+  background:
+    radial-gradient(1200px 500px at 10% -10%, rgba(15, 118, 110, 0.08), transparent 55%),
+    radial-gradient(900px 400px at 100% 0%, rgba(3, 105, 161, 0.06), transparent 50%),
+    var(--bg);
+  color: var(--text);
+  line-height: 1.55;
+  min-height: 100vh;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Top bar — brand + tabs + actions in one strip */
+.header {
+  background: rgba(255,255,255,0.92);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(14px);
+  padding: 0 28px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  min-height: 64px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  flex-shrink: 0;
+}
+
+.brand-mark {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(145deg, #0f766e, #0e7490);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: -0.02em;
+  box-shadow: 0 8px 20px rgba(15, 118, 110, 0.28);
+  flex-shrink: 0;
+}
+
+.brand h1 {
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.brand-sub {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  margin-top: 1px;
+}
+
+.top-nav {
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  align-self: stretch;
+  margin-left: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.nav-item {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 150ms ease, background 150ms ease;
+}
+
+.nav-item:hover { color: var(--text); background: rgba(15, 23, 42, 0.03); }
+
+.nav-item.active {
+  color: var(--primary-ink);
+}
+
+.nav-item.active::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 0;
+  height: 3px;
+  border-radius: 3px 3px 0 0;
+  background: var(--primary);
+}
+
+.nav-meta {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--bg-subtle);
+  color: var(--text-muted);
+  line-height: 1.3;
+}
+
+.nav-item.active .nav-meta {
+  background: var(--primary-light);
+  color: var(--primary-ink);
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 14px;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 13.5px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: transform 150ms ease-out, box-shadow 150ms ease-out, background 150ms ease-out, border-color 150ms ease-out;
+  text-decoration: none;
+}
+
+.btn:hover { transform: translateY(-1px) scale(1.02); }
+.btn:active { transform: scale(0.98); }
+
+.btn-white {
+  background: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow);
+}
+.btn-white:hover { background: #fff; border-color: var(--primary); color: var(--primary-ink); }
+
+.btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover { background: var(--primary-hover); }
+
+.btn-success { background: var(--success); color: white; }
+.btn-success:hover { background: #166534; }
+
+.btn-danger { background: var(--danger); color: white; }
+.btn-danger:hover { background: #991b1b; }
+
+.btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
+.btn-outline:hover { background: var(--bg-subtle); }
+
+.btn-sm { padding: 6px 11px; font-size: 12.5px; }
+
+.btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+.btn .spinner {
+  width: 14px; height: 14px;
+  border: 2px solid transparent;
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.btn-browser {
+  background: var(--primary);
+  color: white;
+  border: none;
+}
+.btn-browser:hover { background: var(--primary-hover); }
+
+/* Login overlay */
+.login-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0.94);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius);
+  z-index: 10;
+  backdrop-filter: blur(3px);
+}
+.login-message { text-align: center; padding: 20px; }
+.login-message .login-icon { font-size: 32px; margin-bottom: 8px; animation: pulse 1.5s ease-in-out infinite; }
+.login-message .login-text { font-size: 14px; color: var(--primary-ink); font-weight: 600; }
+.login-message .login-hint { font-size: 12px; color: var(--text-secondary); margin-top: 4px; }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+
+/* Layout — full-width content under top nav */
+.main-area { min-width: 0; }
+.container.page {
+  display: none;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: var(--space-5) var(--space-5) var(--space-6);
+  flex-direction: column;
+  gap: var(--space-5);
+}
+.container.page.active {
+  display: flex;
+}
+
+@media (max-width: 900px) {
+  .header { padding: 0 16px; }
+  .header-inner {
+    min-height: auto;
+    padding: 10px 0;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .top-nav {
+    order: 3;
+    width: 100%;
+    margin-left: 0;
+    border-top: 1px solid var(--border);
+    padding-top: 0;
+  }
+  .nav-item {
+    flex: 1;
+    justify-content: center;
+    padding: 12px 8px;
+  }
+  .header-actions { width: 100%; justify-content: flex-start; }
+}
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+.section-head h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+.section-hint {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.panel {
+  background: transparent;
+}
+
+/* Stats */
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: box-shadow 200ms ease, transform 200ms ease;
+}
+.stat-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+
+.stat-icon {
+  width: 42px; height: 42px;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.stat-icon.total { background: #e0f2fe; }
+.stat-icon.active { background: var(--success-bg); }
+.stat-icon.warning { background: var(--warning-bg); }
+.stat-icon.error { background: var(--danger-bg); }
+
+.stat-info h3 {
+  font-family: var(--mono);
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+.stat-info p { font-size: 0.8rem; color: var(--text-secondary); margin-top: 2px; }
+
+/* Token dashboard — denser command strip */
+.token-dashboard {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr;
+  gap: 0;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.td-hero, .td-side-item, .td-metrics {
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+.td-hero {
+  padding: 28px 28px 24px;
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  background:
+    linear-gradient(135deg, rgba(15,118,110,0.09), transparent 60%),
+    var(--card);
+  border-right: 1px solid var(--border);
+}
+.td-hero-icon {
+  width: 52px; height: 52px;
+  border-radius: 14px;
+  background: #0f766e;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  flex-shrink: 0;
+  box-shadow: 0 10px 24px rgba(15,118,110,0.25);
+}
+.td-hero-body { min-width: 0; }
+.td-hero-label {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+.td-hero-value {
+  font-family: var(--mono);
+  font-size: clamp(2rem, 3.4vw, 2.85rem);
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  color: var(--text);
+}
+.td-hero-wan {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+.td-side-item {
+  padding: 28px 24px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  border-right: 1px solid var(--border);
+  background: var(--card);
+}
+.token-dashboard > .td-side-item:nth-child(3) {
+  border-right: none;
+}
+.td-side-k {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
+  font-weight: 500;
+}
+.td-side-v {
+  font-family: var(--mono);
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+.td-side-v.cost { color: var(--success); }
+.td-side-ico {
+  width: 32px; height: 32px;
+  border-radius: 9px;
+  background: #e0f2fe;
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+}
+.td-metrics {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  padding: 0;
+  border-top: 1px solid var(--border);
+  background: #fafbfc;
+}
+.td-metric {
+  padding: 16px 18px;
+  border-right: 1px solid var(--border);
+  display: block;
+}
+.td-metric:last-child { border-right: none; }
+.td-metric-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+.td-metric-v {
+  font-family: var(--mono);
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  text-align: left;
+}
+.td-hit-bar {
+  margin-top: 10px;
+  height: 5px;
+  background: var(--bg-subtle);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.td-hit-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #14b8a6, #0f766e);
+  border-radius: 99px;
+  width: 0%;
+  transition: width 0.35s ease;
+}
+
+/* Usage rank — fills home page under totals */
+.usage-rank {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.usage-rank-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.usage-rank-head h2 {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.usage-rank-body { padding: 8px 0; min-height: 220px; }
+.usage-rank-empty {
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+.usage-rank .list-pager {
+  margin: 0;
+  border: none;
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+  box-shadow: none;
+}
+.ur-row {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1.4fr) minmax(120px, 1.6fr) 110px 90px 100px;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 20px;
+  transition: background 150ms ease;
+}
+.ur-row:hover { background: var(--bg-subtle); cursor: pointer; }
+.ur-rank {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-align: center;
+}
+.ur-rank.top { color: var(--primary); }
+.ur-email {
+  font-size: 0.9rem;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ur-bar-wrap {
+  height: 8px;
+  background: var(--bg-subtle);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.ur-bar {
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, #5eead4, #0f766e);
+  min-width: 2px;
+  transition: width 0.4s ease;
+}
+.ur-tokens, .ur-req, .ur-cost {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-align: right;
+  color: var(--text);
+}
+.ur-cost { color: var(--success); }
+.ur-col-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-align: right;
+}
+.ur-head-row {
+  padding-top: 4px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 4px;
+}
+.ur-head-row:hover { background: transparent; cursor: default; }
+
+/* Group tabs */
+.group-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  background: var(--card);
+  padding: 8px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.group-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: none;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text-secondary);
+  transition: background 150ms ease, color 150ms ease, transform 150ms ease;
+}
+.group-tab:hover { background: var(--bg-subtle); color: var(--text); }
+.group-tab.active {
+  background: var(--primary);
+  color: white;
+}
+.group-tab .tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  background: rgba(15, 23, 42, 0.08);
+  font-family: var(--mono);
+}
+.group-tab.active .tab-count { background: rgba(255,255,255,0.22); }
+
+.group-section { margin-bottom: 20px; }
+.group-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+.group-header h2 { font-size: 0.95rem; font-weight: 700; }
+.group-count, .group-stats {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  background: var(--bg-subtle);
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+/* Account list */
+.account-list {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.account-list-head,
+.account-list-row {
+  display: grid;
+  grid-template-columns: 28px minmax(180px, 1.7fr) 88px 96px 1.25fr 130px 100px;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 16px;
+}
+.account-list-head {
+  background: #f8fafc;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.account-list-row {
+  border-bottom: 1px solid #f1f5f9;
+  cursor: pointer;
+  transition: background 150ms ease;
+}
+.account-list-row:nth-child(even) { background: #fcfdfe; }
+.account-list-row:last-child { border-bottom: none; }
+.account-list-row:hover {
+  background: #f0fdfa;
+}
+.account-list-row:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+}
+
+.list-pager {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  padding: 12px 14px;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.list-pager-info {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+.list-pager-info strong {
+  color: var(--text);
+  font-family: var(--mono);
+}
+.list-pager-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.list-pager-controls select {
+  padding: 6px 10px;
+  border: 1px solid var(--border-strong);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 0.8rem;
+  background: #fff;
+}
+.list-pager-controls .btn:disabled {
+  opacity: 0.4;
+  transform: none;
+}
+.list-pager-pages {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.page-btn {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #fff;
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+.page-btn:hover { border-color: var(--primary); color: var(--primary-ink); }
+.page-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+.page-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.al-dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: var(--border-strong);
+  justify-self: center;
+  box-shadow: 0 0 0 3px rgba(148,163,184,0.18);
+}
+.al-dot.active { background: var(--success); box-shadow: 0 0 0 3px rgba(21,128,61,0.15); }
+.al-dot.error { background: var(--danger); box-shadow: 0 0 0 3px rgba(185,28,28,0.15); }
+.al-dot.unknown { background: #94a3b8; }
+.al-email {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.al-muted {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--mono);
+}
+.al-token-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.al-token-cell .al-token-num {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-family: var(--mono);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.al-token-cell .al-cost {
+  font-size: 0.78rem;
+  font-weight: 600;
+  font-family: var(--mono);
+  color: var(--success);
+  white-space: nowrap;
+}
+.al-usage {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+.al-usage-text {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.al-usage .progress-bar { height: 5px; margin: 0; }
+
+.detail-modal.modal { max-width: 460px; width: 94%; }
+.detail-modal .account-card {
+  box-shadow: none;
+  padding: 4px 2px 0;
+  border: none;
+}
+.detail-modal .account-card:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.accounts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: 20px;
+}
+
+.account-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 22px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.account-card .status-bar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.account-card .status-bar.active { background: var(--success); }
+.account-card .status-bar.error { background: var(--danger); }
+.account-card .status-bar.unknown { background: var(--border-strong); }
+
+.account-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  margin-top: 4px;
+  gap: 12px;
+}
+.account-email { font-size: 0.95rem; font-weight: 700; word-break: break-all; color: var(--text); }
+.account-password { font-size: 0.75rem; color: var(--text-secondary); margin-top: 3px; font-family: var(--mono); }
+
+.status-badge {
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.status-badge.active { background: var(--success-bg); color: var(--success); }
+.status-badge.error { background: var(--danger-bg); color: var(--danger); }
+.status-badge.unknown { background: #f1f5f9; color: var(--text-secondary); }
+
+.badge-row {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.plan-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: var(--primary-light);
+  color: var(--primary-ink);
+  text-transform: capitalize;
+}
+.plan-badge.free {
+  background: #f1f5f9;
+  color: #64748b;
+  border: 1px dashed #94a3b8;
+}
+.plan-badge.team { background: #dbeafe; color: #1d4ed8; }
+.plan-badge.pro { background: #fae8ff; color: #a21caf; }
+.plan-badge.business { background: #fef3c7; color: #92400e; }
+
+.free-plan-notice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  background: #f8fafc;
+  border: 1px dashed #cbd5e1;
+  border-radius: var(--radius-sm);
+  margin-bottom: 12px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+.free-plan-notice .free-icon { font-size: 18px; flex-shrink: 0; }
+.free-plan-notice .free-text strong { color: var(--text); }
+
+.group-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.usage-section { margin-bottom: 14px; }
+.usage-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+  gap: 8px;
+}
+.usage-label { font-size: 0.8rem; color: var(--text-secondary); }
+.usage-value { font-size: 0.8rem; font-weight: 700; font-family: var(--mono); }
+
+.progress-bar {
+  width: 100%;
+  height: 7px;
+  background: var(--bg-subtle);
+  border-radius: 99px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.4s ease;
+  min-width: 0;
+}
+.progress-fill.green { background: linear-gradient(90deg, #2dd4bf, #0f766e); }
+.progress-fill.yellow { background: linear-gradient(90deg, #fbbf24, #d97706); }
+.progress-fill.red { background: linear-gradient(90deg, #f87171, #dc2626); }
+
+.error-msg {
+  font-size: 12px;
+  color: var(--danger);
+  background: var(--danger-bg);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 12px;
+  word-break: break-all;
+}
+.account-meta { font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 14px; }
+.account-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
+
+.empty-state { text-align: center; padding: 72px 20px; color: var(--text-secondary); }
+.empty-state svg { width: 72px; height: 72px; margin-bottom: 14px; color: var(--border-strong); }
+.empty-state h3 { font-size: 1.1rem; color: var(--text); margin-bottom: 8px; }
+
+/* Modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(6px);
+  padding: 16px;
+}
+.modal-overlay.active {
+  display: flex;
+  animation: fadeIn 180ms ease-out;
+}
+.modal {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  animation: modalIn 220ms ease-out;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes modalIn {
+  from { opacity: 0; transform: translateY(10px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--border);
+}
+.modal-header h2 { font-size: 1.05rem; font-weight: 700; }
+.modal-close {
+  width: 32px; height: 32px;
+  border: none; background: none;
+  cursor: pointer; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px; color: var(--text-secondary);
+}
+.modal-close:hover { background: var(--bg-subtle); color: var(--text); }
+.modal-body { padding: 20px 22px; }
+.modal-footer {
+  padding: 14px 22px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.form-group { margin-bottom: 16px; }
+.form-group label {
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: var(--text);
+}
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-family: inherit;
+  background: #fff;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.15);
+}
+.form-group .hint { font-size: 0.75rem; color: var(--text-secondary); margin-top: 4px; }
+.group-input-wrapper { position: relative; }
+
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 2000;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.toast {
+  padding: 12px 18px;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-lg);
+  animation: toastIn 0.28s ease, toastOut 0.28s ease 3.6s forwards;
+  max-width: 400px;
+}
+.toast-success { background: var(--success); color: white; }
+.toast-error { background: var(--danger); color: white; }
+.toast-info { background: var(--primary-ink); color: white; }
+@keyframes toastIn {
+  from { transform: translateX(16px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+@keyframes toastOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@media (max-width: 1100px) {
+  .stats-bar { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .td-metrics { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .td-metric { border-bottom: 1px solid var(--border); }
+  .ur-row { grid-template-columns: 32px minmax(0, 1.2fr) minmax(80px, 1fr) 100px 90px; }
+  .ur-req { display: none; }
+}
+@media (max-width: 900px) {
+  .token-dashboard { grid-template-columns: 1fr; }
+  .td-hero { border-right: none; border-bottom: 1px solid var(--border); }
+  .td-side-item { border-right: none; border-bottom: 1px solid var(--border); }
+  .account-list-head { display: none; }
+  .account-list-row {
+    grid-template-columns: 16px 1fr;
+    grid-template-rows: auto auto;
+  }
+  .al-hide-mobile { display: none; }
+  .stats-bar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .td-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .container.page { padding: 16px; gap: 16px; }
+  .brand h1 { font-size: 1rem; }
+  .brand-sub { display: none; }
+  .ur-row { grid-template-columns: 28px minmax(0, 1fr) 90px; }
+  .ur-bar-wrap, .ur-cost, .ur-req { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-mark">C</div>
+      <div>
+        <h1>Cursor 账户</h1>
+        <p class="brand-sub" id="brandSub">用量与账号集中管理</p>
+      </div>
+    </div>
+    <nav class="top-nav" aria-label="主导航">
+      <button class="nav-item active" id="navHome" onclick="switchPage('home')">用量消耗</button>
+      <button class="nav-item" id="navAccounts" onclick="switchPage('accounts')">
+        用户账户
+        <span class="nav-meta" id="navAccountCount">0</span>
+      </button>
+    </nav>
+    <div class="header-actions" id="headerActionsHome">
+      <button class="btn btn-white" onclick="refreshAllUsage()" id="refreshAllBtn">刷新全部用量</button>
+    </div>
+    <div class="header-actions" id="headerActionsAccounts" style="display:none;">
+      <button class="btn btn-white" onclick="openAddModal()">+ 添加账户</button>
+      <button class="btn btn-white" onclick="openImportModal()">批量导入</button>
+      <button class="btn btn-white" onclick="loginAllAccounts()" id="loginAllBtn">同步本机 Cursor</button>
+    </div>
+  </div>
+</div>
+
+<div class="main-area">
+  <div class="container page active" id="pageHome">
+    <section class="panel">
+      <div class="token-dashboard" id="tokenDashboard">
+        <div class="td-hero">
+          <div class="td-hero-icon">&#9889;</div>
+          <div class="td-hero-body">
+            <div class="td-hero-label">真实消耗 Tokens · 全部账号合计</div>
+            <div class="td-hero-value" id="tdGrandTotal">0</div>
+            <div class="td-hero-wan" id="tdGrandWan">≈ 0 万</div>
+          </div>
+        </div>
+        <div class="td-side-item">
+          <div>
+            <div class="td-side-k">总请求数</div>
+            <div class="td-side-v" id="tdRequests">0</div>
+          </div>
+          <div class="td-side-ico">&#128200;</div>
+        </div>
+        <div class="td-side-item">
+          <div>
+            <div class="td-side-k">总成本</div>
+            <div class="td-side-v cost" id="tdCost">$0</div>
+          </div>
+          <div class="td-side-ico" style="background:#ecfdf5;color:#16a34a;">$</div>
+        </div>
+        <div class="td-metrics">
+          <div class="td-metric">
+            <div class="td-metric-head">&#8595; 新增输入</div>
+            <div class="td-metric-v" id="tdInput">0</div>
+          </div>
+          <div class="td-metric">
+            <div class="td-metric-head">&#8593; Output</div>
+            <div class="td-metric-v" id="tdOutput">0</div>
+          </div>
+          <div class="td-metric">
+            <div class="td-metric-head">&#128451; 创建</div>
+            <div class="td-metric-v" id="tdCacheWrite">0</div>
+          </div>
+          <div class="td-metric">
+            <div class="td-metric-head">&#10024; 命中</div>
+            <div class="td-metric-v" id="tdCacheHit">0</div>
+          </div>
+          <div class="td-metric">
+            <div class="td-metric-head">缓存命中率</div>
+            <div class="td-metric-v" id="tdHitRate">0%</div>
+            <div class="td-hit-bar"><div class="td-hit-fill" id="tdHitFill"></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="usage-rank" aria-label="分账号用量">
+      <div class="usage-rank-head">
+        <h2>分账号用量</h2>
+        <span class="section-hint">按 Token 消耗排序 · 点行看详情</span>
+      </div>
+      <div class="usage-rank-body" id="usageRankBody">
+        <div class="usage-rank-empty">暂无用量数据</div>
+      </div>
+      <div id="usageRankPager"></div>
+    </section>
+  </div>
+
+  <div class="container page" id="pageAccounts">
+    <section class="panel">
+      <div class="section-head">
+        <h2>用户概况</h2>
+        <span class="section-hint">账号数 · Free · 高用量 · 异常</span>
+      </div>
+      <div class="stats-bar" id="statsBar">
+        <div class="stat-card">
+          <div class="stat-icon total">&#128100;</div>
+          <div class="stat-info"><h3 id="statTotal">0</h3><p>账号总数</p></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon active">&#9989;</div>
+          <div class="stat-info"><h3 id="statActive">0</h3><p>付费活跃</p></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon" style="background:#e0f2fe;">&#127381;</div>
+          <div class="stat-info"><h3 id="statFree">0</h3><p>Free 账号</p></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon warning">&#9888;</div>
+          <div class="stat-info"><h3 id="statWarning">0</h3><p>用量较高</p></div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon error">&#10060;</div>
+          <div class="stat-info"><h3 id="statError">0</h3><p>异常账号</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="section-head">
+        <h2>账号列表</h2>
+        <span class="section-hint">点一行看详情</span>
+      </div>
+      <div class="group-tabs" id="groupTabs"></div>
+      <div id="accountsContainer"></div>
+      <div class="empty-state" id="emptyState" style="display:none;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M12 4.5v15m7.5-7.5h-15" stroke-linecap="round"/>
+        </svg>
+        <h3>暂无账号</h3>
+        <p>点击上方「添加账户」或「批量导入」开始管理</p>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- Add Account Modal -->
+<div class="modal-overlay" id="addModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>添加账户</h2>
+      <button class="modal-close" onclick="closeModal('addModal')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>邮箱</label>
+        <input type="email" id="addEmail" placeholder="example@outlook.com">
+      </div>
+      <div class="form-group">
+        <label>密码</label>
+        <input type="text" id="addPassword" placeholder="输入账户密码">
+      </div>
+      <div class="form-group">
+        <label>分组</label>
+        <div class="group-input-wrapper">
+          <input type="text" id="addGroup" placeholder="输入或选择分组 (如: golang开发组)" list="groupList">
+          <datalist id="groupList"></datalist>
+        </div>
+        <div class="hint">输入分组名称或从已有分组中选择</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('addModal')">取消</button>
+      <button class="btn btn-primary" onclick="addAccount()">添加</button>
+    </div>
+  </div>
+</div>
+
+<!-- Import Modal -->
+<div class="modal-overlay" id="importModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>批量导入账户</h2>
+      <button class="modal-close" onclick="closeModal('importModal')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label>导入分组</label>
+        <input type="text" id="importGroup" placeholder="这批账户归属的分组 (可选)" list="groupList">
+      </div>
+      <div class="form-group">
+        <label>粘贴账户列表</label>
+        <textarea id="importText" placeholder="每行一个账户，邮箱和密码用 Tab 或空格分隔：&#10;user1@email.com    password1&#10;user2@email.com    password2"></textarea>
+        <div class="hint">支持 Tab 或多空格分隔。每行格式：邮箱 &lt;分隔符&gt; 密码</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('importModal')">取消</button>
+      <button class="btn btn-primary" onclick="importAccounts()">导入</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Account Modal -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <div class="modal-header">
+      <h2>编辑账户</h2>
+      <button class="modal-close" onclick="closeModal('editModal')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="editId">
+      <div class="form-group">
+        <label>邮箱</label>
+        <input type="email" id="editEmail" placeholder="example@outlook.com">
+      </div>
+      <div class="form-group">
+        <label>密码</label>
+        <input type="text" id="editPassword" placeholder="留空不修改">
+      </div>
+      <div class="form-group">
+        <label>分组</label>
+        <input type="text" id="editGroup" placeholder="输入或选择分组" list="groupList">
+        <div class="hint">留空为"未分组"，输入新名称可创建新分组</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-outline" onclick="closeModal('editModal')">取消</button>
+      <button class="btn btn-primary" onclick="updateAccount()">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- Account Detail Modal -->
+<div class="modal-overlay" id="detailModal">
+  <div class="modal detail-modal">
+    <div class="modal-header">
+      <h2>账户详情</h2>
+      <button class="modal-close" onclick="closeModal('detailModal')">&times;</button>
+    </div>
+    <div class="modal-body" id="detailModalBody"></div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+let accounts = [];
+let groups = [];
+let currentGroup = '全部'; // current filter
+let lastAccountsJSON = '';
+let detailAccountId = null;
+let currentPage = 'home';
+let listPage = 1;
+let listPageSize = 10;
+let rankPage = 1;
+let rankPageSize = 10;
+
+function switchPage(page) {
+  currentPage = page === 'accounts' ? 'accounts' : 'home';
+  document.getElementById('pageHome').classList.toggle('active', currentPage === 'home');
+  document.getElementById('pageAccounts').classList.toggle('active', currentPage === 'accounts');
+  document.getElementById('navHome').classList.toggle('active', currentPage === 'home');
+  document.getElementById('navAccounts').classList.toggle('active', currentPage === 'accounts');
+  document.getElementById('headerActionsHome').style.display = currentPage === 'home' ? 'flex' : 'none';
+  document.getElementById('headerActionsAccounts').style.display = currentPage === 'accounts' ? 'flex' : 'none';
+  document.getElementById('brandSub').textContent = currentPage === 'home'
+    ? 'Token / 请求 / 成本汇总'
+    : '账号数 · Free · 高用量 · 异常 · 列表';
+  if (currentPage === 'accounts') {
+    renderGroupTabs();
+    renderAccountsByGroup();
+  } else {
+    renderUsageRank();
+  }
+}
+
+// === API Functions ===
+
+async function fetchAccounts(force) {
+  try {
+    const resp = await fetch('/api/accounts');
+    const data = await resp.json();
+    const next = JSON.stringify(data);
+    if (!force && next === lastAccountsJSON) {
+      return; // 无变化，不重绘，避免闪烁
+    }
+    lastAccountsJSON = next;
+    accounts = data;
+    await fetchGroups();
+    renderAll();
+    // 详情弹窗打开时，同步刷新内容
+    if (detailAccountId && document.getElementById('detailModal').classList.contains('active')) {
+      const acc = accounts.find(a => a.id === detailAccountId);
+      if (acc) {
+        document.getElementById('detailModalBody').innerHTML = renderDetailCard(acc);
+      }
+    }
+  } catch (err) {
+    // 自动轮询时不弹 toast，避免刷屏
+    if (force) showToast('加载账户失败: ' + err.message, 'error');
+  }
+}
+
+async function fetchGroups() {
+  try {
+    const resp = await fetch('/api/groups');
+    groups = await resp.json();
+    updateGroupDatalist();
+  } catch (err) {
+    groups = [];
+  }
+}
+
+function updateGroupDatalist() {
+  const dl = document.getElementById('groupList');
+  dl.innerHTML = '';
+  groups.forEach(g => {
+    if (g.name !== '未分组') {
+      const opt = document.createElement('option');
+      opt.value = g.name;
+      dl.appendChild(opt);
+    }
+  });
+}
+
+async function addAccount() {
+  const email = document.getElementById('addEmail').value.trim();
+  const password = document.getElementById('addPassword').value;
+  const group = document.getElementById('addGroup').value.trim();
+  if (!email) {
+    showToast('请填写邮箱', 'error');
+    return;
+  }
+  try {
+    const resp = await fetch('/api/accounts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password, group })
+    });
+    if (!resp.ok) {
+      const data = await resp.json();
+      throw new Error(data.error || 'unknown error');
+    }
+    closeModal('addModal');
+    document.getElementById('addEmail').value = '';
+    document.getElementById('addPassword').value = '';
+    document.getElementById('addGroup').value = '';
+    showToast('账户添加成功', 'success');
+    fetchAccounts(true);
+  } catch (err) {
+    showToast('添加失败: ' + err.message, 'error');
+  }
+}
+
+async function importAccounts() {
+  const text = document.getElementById('importText').value.trim();
+  const group = document.getElementById('importGroup').value.trim();
+  if (!text) {
+    showToast('请粘贴账户列表', 'error');
+    return;
+  }
+
+  const lines = text.split('\n').filter(l => l.trim());
+  const accs = [];
+  for (const line of lines) {
+    const parts = line.split(/\t+|\s{2,}/);
+    if (parts.length >= 2) {
+      accs.push({ email: parts[0].trim(), password: parts[1].trim(), group: group });
+    }
+  }
+
+  if (accs.length === 0) {
+    showToast('未能解析到有效账户', 'error');
+    return;
+  }
+
+  try {
+    const resp = await fetch('/api/accounts/import', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ accounts: accs })
+    });
+    const data = await resp.json();
+    closeModal('importModal');
+    document.getElementById('importText').value = '';
+    document.getElementById('importGroup').value = '';
+    const count = data.added ? data.added.length : 0;
+    showToast(`成功导入 ${count} 个账户`, 'success');
+    fetchAccounts(true);
+  } catch (err) {
+    showToast('导入失败: ' + err.message, 'error');
+  }
+}
+
+async function deleteAccount(id) {
+  if (!confirm('确定要删除这个账户吗？')) return;
+  try {
+    await fetch(`/api/accounts/${id}`, { method: 'DELETE' });
+    showToast('账户已删除', 'success');
+    closeModal('detailModal');
+    fetchAccounts(true);
+  } catch (err) {
+    showToast('删除失败: ' + err.message, 'error');
+  }
+}
+
+function openEditModal(id) {
+  const acc = accounts.find(a => a.id === id);
+  if (!acc) return;
+  document.getElementById('editId').value = id;
+  document.getElementById('editEmail').value = acc.email;
+  document.getElementById('editPassword').value = '';
+  document.getElementById('editGroup').value = acc.group || '';
+  document.getElementById('editModal').classList.add('active');
+}
+
+async function updateAccount() {
+  const id = document.getElementById('editId').value;
+  const email = document.getElementById('editEmail').value.trim();
+  const password = document.getElementById('editPassword').value;
+  const group = document.getElementById('editGroup').value.trim();
+
+  const body = { group: group }; // always send group (can be empty to clear)
+  if (email) body.email = email;
+  if (password) body.password = password;
+
+  try {
+    const resp = await fetch(`/api/accounts/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if (!resp.ok) {
+      const data = await resp.json();
+      throw new Error(data.error || 'unknown error');
+    }
+    closeModal('editModal');
+    showToast('账户已更新', 'success');
+    fetchAccounts(true);
+  } catch (err) {
+    showToast('更新失败: ' + err.message, 'error');
+  }
+}
+
+// === Local Cursor Login ===
+
+async function browserLogin(id, btn) {
+  const card = btn.closest('.account-card');
+  if (card) card.style.position = 'relative';
+  const originalText = btn.innerHTML;
+  btn.disabled = true;
+
+  let overlay = null;
+  if (card) {
+    overlay = document.createElement('div');
+    overlay.className = 'login-overlay';
+    overlay.innerHTML = `
+      <div class="login-message">
+        <div class="login-icon">&#128274;</div>
+        <div class="login-text">正在登录…</div>
+        <div class="login-hint">写入本机 Cursor 登录态（必要时会先关闭，写完后自动重新打开）</div>
+      </div>`;
+    card.appendChild(overlay);
+  }
+
+  try {
+    const resp = await fetch(`/api/accounts/${id}/local-login`, {method: 'POST'});
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || '登录失败');
+    const msg = data.message
+      || (data.mode === 'saved' ? '已用保存的登录态直接登录'
+        : data.mode === 'local' ? '本机 Cursor 登录成功'
+        : '浏览器登录成功');
+    showToast(msg, 'success');
+    fetchAccounts(true);
+  } catch (err) {
+    showToast('登录失败: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = originalText;
+    if (overlay && overlay.parentNode) overlay.remove();
+  }
+}
+
+async function loginAllAccounts() {
+  const btn = document.getElementById('loginAllBtn');
+  const originalText = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> 同步中...';
+  showToast('正在读取本机 Cursor 当前账号...', 'info');
+
+  try {
+    const resp = await fetch('/api/login-all', {method: 'POST'});
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || '同步失败');
+    showToast(data.message || '本机 Cursor 已同步', 'success');
+    fetchAccounts(true);
+  } catch (err) {
+    showToast('同步失败: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = originalText;
+  }
+}
+
+async function refreshUsage(id, btn) {
+  const originalText = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>';
+  try {
+    const resp = await fetch(`/api/accounts/${id}/refresh`, { method: 'POST' });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || '刷新失败');
+    showToast('用量已刷新', 'success');
+    fetchAccounts(true);
+  } catch (err) {
+    showToast('刷新失败: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = originalText;
+  }
+}
+
+async function refreshAllUsage() {
+  if (accounts.length === 0) {
+    showToast('暂无账户', 'info');
+    return;
+  }
+  const btn = document.getElementById('refreshAllBtn');
+  const originalText = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> 刷新中...';
+  showToast(`正在刷新 ${accounts.length} 个账户用量...`, 'info');
+  try {
+    const resp = await fetch('/api/refresh-all', { method: 'POST' });
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || '刷新失败');
+    const errCount = (data.errors || []).length;
+    if (errCount > 0) {
+      showToast(`刷新完成，${errCount} 个失败`, 'error');
+    } else {
+      showToast('全部用量已刷新', 'success');
+    }
+    fetchAccounts(true);
+  } catch (err) {
+    showToast('刷新失败: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = originalText;
+  }
+}
+
+// === Rendering ===
+
+function renderAll() {
+  updateStats();
+  if (currentPage === 'accounts') {
+    renderGroupTabs();
+    renderAccountsByGroup();
+  } else {
+    renderUsageRank();
+  }
+}
+
+function renderGroupTabs() {
+  const container = document.getElementById('groupTabs');
+  const totalCount = accounts.length;
+
+  // Build tabs: "全部" + each group
+  let html = `<button class="group-tab ${currentGroup === '全部' ? 'active' : ''}" onclick="switchGroup('全部')">
+    全部 <span class="tab-count">${totalCount}</span>
+  </button>`;
+
+  groups.forEach(g => {
+    const isActive = currentGroup === g.name ? 'active' : '';
+    html += `<button class="group-tab ${isActive}" onclick="switchGroup('${escapeHtml(g.name)}')">
+      ${escapeHtml(g.name)} <span class="tab-count">${g.count}</span>
+    </button>`;
+  });
+
+  container.innerHTML = html;
+}
+
+function switchGroup(name) {
+  currentGroup = name;
+  listPage = 1;
+  renderAll();
+}
+
+function getFilteredAccounts() {
+  if (currentGroup === '全部') return accounts.slice();
+  if (currentGroup === '未分组') return accounts.filter(a => !a.group);
+  return accounts.filter(a => a.group === currentGroup);
+}
+
+function changeListPage(page) {
+  listPage = Math.max(1, Number(page) || 1);
+  renderAccountsByGroup();
+}
+
+function changeListPageSize(size) {
+  listPageSize = Number(size) || 10;
+  listPage = 1;
+  renderAccountsByGroup();
+}
+
+function renderPager(total) {
+  if (total <= 0) return '';
+  const totalPages = Math.max(1, Math.ceil(total / listPageSize));
+  if (listPage > totalPages) listPage = totalPages;
+  const start = (listPage - 1) * listPageSize + 1;
+  const end = Math.min(total, listPage * listPageSize);
+
+  // page number window
+  let pages = [];
+  const windowSize = 5;
+  let from = Math.max(1, listPage - Math.floor(windowSize / 2));
+  let to = Math.min(totalPages, from + windowSize - 1);
+  from = Math.max(1, to - windowSize + 1);
+  for (let i = from; i <= to; i++) pages.push(i);
+
+  const pageBtns = pages.map(p =>
+    `<button class="page-btn ${p === listPage ? 'active' : ''}" onclick="changeListPage(${p})">${p}</button>`
+  ).join('');
+
+  return `<div class="list-pager">
+    <div class="list-pager-info">共 <strong>${total}</strong> 条，显示 ${start}-${end}</div>
+    <div class="list-pager-controls">
+      <label>
+        每页
+        <select onchange="changeListPageSize(this.value)">
+          <option value="10" ${listPageSize === 10 ? 'selected' : ''}>10</option>
+          <option value="20" ${listPageSize === 20 ? 'selected' : ''}>20</option>
+          <option value="50" ${listPageSize === 50 ? 'selected' : ''}>50</option>
+        </select>
+      </label>
+      <button class="btn btn-outline btn-sm" ${listPage <= 1 ? 'disabled' : ''} onclick="changeListPage(${listPage - 1})">上一页</button>
+      <div class="list-pager-pages">${pageBtns}</div>
+      <button class="btn btn-outline btn-sm" ${listPage >= totalPages ? 'disabled' : ''} onclick="changeListPage(${listPage + 1})">下一页</button>
+    </div>
+  </div>`;
+}
+
+function renderAccountsByGroup() {
+  const container = document.getElementById('accountsContainer');
+  const empty = document.getElementById('emptyState');
+
+  if (!accounts || accounts.length === 0) {
+    container.innerHTML = '';
+    empty.style.display = 'block';
+    return;
+  }
+  empty.style.display = 'none';
+
+  const filtered = getFilteredAccounts();
+  if (filtered.length === 0) {
+    container.innerHTML = '<div class="empty-state" style="padding: 40px;"><h3>该分组暂无账户</h3></div>';
+    return;
+  }
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / listPageSize));
+  if (listPage > totalPages) listPage = totalPages;
+  const startIdx = (listPage - 1) * listPageSize;
+  const pageItems = filtered.slice(startIdx, startIdx + listPageSize);
+  const groupStats = calcGroupStats(filtered);
+  const title = currentGroup === '全部' ? '全部账户' : currentGroup;
+
+  container.innerHTML = `<div class="group-section">
+    <div class="group-header">
+      <h2>${escapeHtml(title)}</h2>
+      <span class="group-count">${filtered.length} 个账户</span>
+      <span class="group-stats">${groupStats}</span>
+    </div>
+    <div class="account-list">
+      <div class="account-list-head">
+        <span></span>
+        <span>邮箱</span>
+        <span class="al-hide-mobile">计划</span>
+        <span class="al-hide-mobile">状态</span>
+        <span class="al-hide-mobile">用量</span>
+        <span class="al-hide-mobile">Token / 成本</span>
+        <span class="al-hide-mobile">更新</span>
+      </div>
+      ${pageItems.map(acc => renderListRow(acc)).join('')}
+    </div>
+    ${renderPager(filtered.length)}
+  </div>`;
+}
+
+function calcGroupStats(groupAccounts) {
+  const free = groupAccounts.filter(a => isFreePlan(a.usage)).length;
+  const active = groupAccounts.filter(a => a.status === 'active' && !isFreePlan(a.usage)).length;
+  const error = groupAccounts.filter(a => a.status === 'error').length;
+  const parts = [];
+  if (active > 0) parts.push(`${active} 付费`);
+  if (free > 0) parts.push(`${free} Free`);
+  if (error > 0) parts.push(`${error} 异常`);
+  return parts.join(' / ') || '暂无数据';
+}
+
+function isFreePlan(usage) {
+  if (!usage) return false;
+  const p = (usage.plan || '').toLowerCase();
+  return p === 'free' || p === 'hobby';
+}
+
+function renderListRow(acc) {
+  const usage = acc.usage;
+  const statusClass = acc.status || 'unknown';
+  const plan = (usage && usage.plan) || '-';
+  const planLower = plan.toLowerCase();
+  const planBadgeClass = ['free', 'hobby', 'team', 'pro', 'business'].includes(planLower) ? planLower : '';
+  const percent = usage && usage.premium_total > 0
+    ? Math.round(usage.premium_used / usage.premium_total * 100)
+    : 0;
+  const progressClass = percent >= 80 ? 'red' : percent >= 60 ? 'yellow' : 'green';
+  const usageText = usage
+    ? (usage.usage_display || (usage.premium_total ? `${usage.premium_used} / ${usage.premium_total}` : '未获取'))
+    : '未获取';
+  let tokenText = '-';
+  if (usage) {
+    if (usage.token_used) tokenText = Number(usage.token_used).toLocaleString();
+    else if (usage.tokens_display) tokenText = usage.tokens_display.replace(/^Token 已用\s*/, '');
+  }
+  let costText = '';
+  if (usage && Number(usage.cost_cents) > 0) {
+    costText = '$' + (Number(usage.cost_cents) / 100).toFixed(2);
+  }
+  const updatedAt = acc.updated_at ? timeAgo(new Date(acc.updated_at)) : '-';
+
+  return `
+    <div class="account-list-row" role="button" tabindex="0" onclick="openAccountDetail('${acc.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openAccountDetail('${acc.id}')}" title="点击查看详情">
+      <span class="al-dot ${statusClass}"></span>
+      <span class="al-email">${escapeHtml(acc.email)}</span>
+      <span class="al-hide-mobile"><span class="plan-badge ${planBadgeClass}">${escapeHtml(plan)}</span></span>
+      <span class="al-hide-mobile"><span class="status-badge ${statusClass}">${statusText(statusClass)}</span></span>
+      <div class="al-usage al-hide-mobile">
+        <div class="al-usage-text">${escapeHtml(usageText)}</div>
+        <div class="progress-bar">
+          <div class="progress-fill ${progressClass}" style="width:${Math.min(percent, 100)}%"></div>
+        </div>
+      </div>
+      <div class="al-token-cell al-hide-mobile">
+        <span class="al-token-num">${escapeHtml(tokenText)}</span>
+        ${costText ? `<span class="al-cost">${escapeHtml(costText)}</span>` : ''}
+      </div>
+      <span class="al-muted al-hide-mobile">${escapeHtml(updatedAt)}</span>
+    </div>`;
+}
+
+function openAccountDetail(id) {
+  const acc = accounts.find(a => a.id === id);
+  if (!acc) return;
+  detailAccountId = id;
+  document.getElementById('detailModalBody').innerHTML = renderDetailCard(acc);
+  document.getElementById('detailModal').classList.add('active');
+}
+
+function renderDetailCard(acc) {
+  const usage = acc.usage;
+  const isFree = isFreePlan(usage);
+  const percent = usage && usage.premium_total > 0
+    ? Math.round(usage.premium_used / usage.premium_total * 100)
+    : 0;
+  const progressClass = percent >= 80 ? 'red' : percent >= 60 ? 'yellow' : 'green';
+  const statusClass = acc.status || 'unknown';
+  const plan = (usage && usage.plan) || '-';
+  const updatedAt = acc.updated_at ? timeAgo(new Date(acc.updated_at)) : '-';
+  const groupName = acc.group || '';
+
+  let usageHtml = '';
+  if (usage && (usage.premium_total > 0 || usage.usage_display || usage.tokens_display)) {
+    const usageLabel = isFree ? 'Free 用量' : '用量';
+    const usageValue = usage.usage_display || (usage.premium_used + ' / ' + usage.premium_total);
+
+    usageHtml = `
+      <div class="usage-section">
+        <div class="usage-header">
+          <span class="usage-label">${escapeHtml(usageLabel)}</span>
+          <span class="usage-value">${escapeHtml(usageValue)}</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill ${progressClass}" style="width: ${Math.min(percent, 100)}%"></div>
+        </div>
+      </div>`;
+
+    if (usage.tokens_display) {
+      usageHtml += `
+        <div style="font-size:13px;color:var(--text);margin-bottom:6px;font-weight:600;">
+          ${escapeHtml(usage.tokens_display)}
+        </div>`;
+    } else if (usage.token_used > 0) {
+      usageHtml += `
+        <div style="font-size:13px;color:var(--text);margin-bottom:6px;font-weight:600;">
+          Token 已用 ${Number(usage.token_used).toLocaleString()}
+        </div>`;
+    }
+
+    if (usage.on_demand_display) {
+      usageHtml += `
+        <div style="font-size:13px;color:var(--text-secondary);margin-bottom:4px;">
+          按需用量: <strong style="color:var(--text);">${escapeHtml(usage.on_demand_display)}</strong>
+        </div>`;
+    }
+
+    if (usage.reset_date) {
+      usageHtml += `
+        <div style="font-size:12px;color:var(--text-secondary);margin-bottom:8px;">
+          重置日期: ${escapeHtml(usage.reset_date)}
+        </div>`;
+    }
+  } else if (isFree) {
+    usageHtml = `
+      <div class="free-plan-notice">
+        <span class="free-icon">&#127381;</span>
+        <div class="free-text">
+          <strong>Free Plan</strong> — 暂无用量数据
+        </div>
+      </div>`;
+  } else {
+    usageHtml = `
+      <div class="usage-section">
+        <div class="usage-header">
+          <span class="usage-label">用量</span>
+          <span class="usage-value">未获取</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill green" style="width: 0%"></div>
+        </div>
+      </div>`;
+  }
+
+  let errorHtml = '';
+  if (acc.error_msg) {
+    errorHtml = `<div class="error-msg">${escapeHtml(acc.error_msg)}</div>`;
+  }
+
+  const planLower = plan.toLowerCase();
+  const planBadgeClass = ['free', 'hobby', 'team', 'pro', 'business'].includes(planLower) ? planLower : '';
+  let badgeHtml = `<div class="badge-row">
+    <span class="plan-badge ${planBadgeClass}">${escapeHtml(plan)}</span>`;
+  if (groupName) {
+    badgeHtml += `<span class="group-badge">${escapeHtml(groupName)}</span>`;
+  }
+  badgeHtml += '</div>';
+
+  return `
+    <div class="account-card">
+      <div class="status-bar ${statusClass}"></div>
+      <div class="account-header">
+        <div>
+          <div class="account-email">${escapeHtml(acc.email)}</div>
+          <div class="account-password">${escapeHtml(acc.password || '')}</div>
+        </div>
+        <span class="status-badge ${statusClass}">${statusText(statusClass)}</span>
+      </div>
+      ${badgeHtml}
+      ${usageHtml}
+      ${errorHtml}
+      <div class="account-meta">更新时间: ${updatedAt}</div>
+      <div class="account-actions">
+        <button class="btn btn-outline btn-sm" onclick="refreshUsage('${acc.id}', this)" title="用已有 Token 刷新用量">&#128260; 刷新</button>
+        <button class="btn btn-browser btn-sm" onclick="browserLogin('${acc.id}', this)" title="用已保存 Token 登录并写入本机 Cursor">&#128274; 登录</button>
+        <button class="btn btn-outline btn-sm" onclick="closeModal('detailModal'); openEditModal('${acc.id}')">&#9998; 编辑</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteAccount('${acc.id}')">&#128465; 删除</button>
+      </div>
+    </div>`;
+}
+
+function updateStats() {
+  // Stats based on ALL accounts (not filtered)
+  const total = accounts.length;
+  const free = accounts.filter(a => isFreePlan(a.usage)).length;
+  const active = accounts.filter(a => a.status === 'active' && !isFreePlan(a.usage)).length;
+  const warning = accounts.filter(a => {
+    if (!a.usage || a.usage.premium_total === 0) return false;
+    return (a.usage.premium_used / a.usage.premium_total * 100) >= 60;
+  }).length;
+  const error = accounts.filter(a => a.status === 'error').length;
+
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statActive').textContent = active;
+  document.getElementById('statFree').textContent = free;
+  document.getElementById('statWarning').textContent = warning;
+  document.getElementById('statError').textContent = error;
+  const navCount = document.getElementById('navAccountCount');
+  if (navCount) navCount.textContent = total;
+
+  updateTokenDashboard();
+}
+
+function parseCacheFromDisplay(display) {
+  if (!display) return 0;
+  const m = String(display).match(/缓存\s*([\d,]+)/);
+  if (!m) return 0;
+  return Number(m[1].replace(/,/g, '')) || 0;
+}
+
+function formatWan(n) {
+  if (!n) return '0';
+  if (n >= 10000) {
+    const wan = n / 10000;
+    return wan >= 100 ? wan.toFixed(1) + ' 万' : wan.toFixed(2).replace(/\.?0+$/, '') + ' 万';
+  }
+  return Number(n).toLocaleString();
+}
+
+function updateTokenDashboard() {
+  let input = 0, output = 0, cacheWrite = 0, cacheHit = 0, requests = 0, costCents = 0;
+  for (const a of accounts) {
+    const u = a.usage;
+    if (!u) continue;
+    const inTok = Number(u.token_input) || 0;
+    const outTok = Number(u.token_output) || 0;
+    let used = Number(u.token_used) || 0;
+    let hit = Number(u.token_cache) || 0;
+    if (!hit) hit = parseCacheFromDisplay(u.tokens_display);
+    // Backward compatible: old records only have token_used (=input+output)
+    if (!inTok && !outTok && used > 0) {
+      input += used;
+    } else {
+      input += inTok;
+      output += outTok;
+      if (!used) used = inTok + outTok;
+    }
+    cacheWrite += Number(u.token_cache_write) || 0;
+    cacheHit += hit;
+    requests += Number(u.request_count) || 0;
+    costCents += Number(u.cost_cents) || 0;
+  }
+  const grand = input + output + cacheWrite + cacheHit;
+  const denom = input + output + cacheWrite + cacheHit;
+  const hitRate = denom > 0 ? (cacheHit / denom * 100) : 0;
+
+  document.getElementById('tdGrandTotal').textContent = grand.toLocaleString();
+  document.getElementById('tdGrandWan').textContent = '≈ ' + (grand / 10000).toFixed(2) + ' 万';
+  document.getElementById('tdRequests').textContent = requests.toLocaleString();
+  document.getElementById('tdCost').textContent = '$' + (costCents / 100).toFixed(4);
+  document.getElementById('tdInput').textContent = formatWan(input);
+  document.getElementById('tdOutput').textContent = formatWan(output);
+  document.getElementById('tdCacheWrite').textContent = formatWan(cacheWrite);
+  document.getElementById('tdCacheHit').textContent = formatWan(cacheHit);
+  document.getElementById('tdHitRate').textContent = hitRate.toFixed(1) + '%';
+  document.getElementById('tdHitFill').style.width = Math.min(hitRate, 100) + '%';
+  if (currentPage === 'home') renderUsageRank();
+}
+
+function accountTokenTotal(a) {
+  const u = a && a.usage;
+  if (!u) return 0;
+  const inTok = Number(u.token_input) || 0;
+  const outTok = Number(u.token_output) || 0;
+  let used = Number(u.token_used) || 0;
+  let hit = Number(u.token_cache) || 0;
+  if (!hit) hit = parseCacheFromDisplay(u.tokens_display);
+  if (!inTok && !outTok && used > 0) {
+    return used + hit + (Number(u.token_cache_write) || 0);
+  }
+  if (!used) used = inTok + outTok;
+  return used + hit + (Number(u.token_cache_write) || 0);
+}
+
+function renderUsageRank() {
+  const body = document.getElementById('usageRankBody');
+  const pager = document.getElementById('usageRankPager');
+  if (!body) return;
+
+  const rows = accounts.map(a => {
+    const u = a.usage || {};
+    return {
+      id: a.id,
+      email: a.email || '',
+      tokens: accountTokenTotal(a),
+      requests: Number(u.request_count) || 0,
+      costCents: Number(u.cost_cents) || 0,
+    };
+  }).sort((x, y) => y.tokens - x.tokens);
+
+  const maxTok = rows.reduce((m, r) => Math.max(m, r.tokens), 0);
+  if (!rows.length || maxTok <= 0) {
+    body.innerHTML = '<div class="usage-rank-empty">暂无用量数据 · 先刷新账号用量</div>';
+    if (pager) pager.innerHTML = '';
+    return;
+  }
+
+  const totalPages = Math.max(1, Math.ceil(rows.length / rankPageSize));
+  if (rankPage > totalPages) rankPage = totalPages;
+  const startIdx = (rankPage - 1) * rankPageSize;
+  const pageRows = rows.slice(startIdx, startIdx + rankPageSize);
+
+  let html = `<div class="ur-row ur-head-row">
+    <div class="ur-rank">#</div>
+    <div class="ur-email ur-col-label" style="text-align:left">账号</div>
+    <div class="ur-col-label" style="text-align:left">占比</div>
+    <div class="ur-col-label">Tokens</div>
+    <div class="ur-col-label">请求</div>
+    <div class="ur-col-label">成本</div>
+  </div>`;
+
+  pageRows.forEach((r, i) => {
+    const globalIdx = startIdx + i;
+    const pct = maxTok > 0 ? (r.tokens / maxTok * 100) : 0;
+    const rankClass = globalIdx < 3 ? 'ur-rank top' : 'ur-rank';
+    html += `<div class="ur-row" onclick="openAccountDetail('${r.id}')">
+      <div class="${rankClass}">${globalIdx + 1}</div>
+      <div class="ur-email" title="${escapeHtml(r.email)}">${escapeHtml(r.email)}</div>
+      <div class="ur-bar-wrap"><div class="ur-bar" style="width:${pct.toFixed(1)}%"></div></div>
+      <div class="ur-tokens">${formatWan(r.tokens)}</div>
+      <div class="ur-req">${r.requests.toLocaleString()}</div>
+      <div class="ur-cost">$${(r.costCents / 100).toFixed(2)}</div>
+    </div>`;
+  });
+  body.innerHTML = html;
+  if (pager) pager.innerHTML = renderRankPager(rows.length);
+}
+
+function changeRankPage(page) {
+  rankPage = Math.max(1, Number(page) || 1);
+  renderUsageRank();
+}
+
+function changeRankPageSize(size) {
+  rankPageSize = Number(size) || 10;
+  rankPage = 1;
+  renderUsageRank();
+}
+
+function renderRankPager(total) {
+  if (total <= 0) return '';
+  const totalPages = Math.max(1, Math.ceil(total / rankPageSize));
+  if (rankPage > totalPages) rankPage = totalPages;
+  const start = (rankPage - 1) * rankPageSize + 1;
+  const end = Math.min(total, rankPage * rankPageSize);
+
+  let pages = [];
+  const windowSize = 5;
+  let from = Math.max(1, rankPage - Math.floor(windowSize / 2));
+  let to = Math.min(totalPages, from + windowSize - 1);
+  from = Math.max(1, to - windowSize + 1);
+  for (let i = from; i <= to; i++) pages.push(i);
+
+  const pageBtns = pages.map(p =>
+    `<button class="page-btn ${p === rankPage ? 'active' : ''}" onclick="changeRankPage(${p})">${p}</button>`
+  ).join('');
+
+  return `<div class="list-pager">
+    <div class="list-pager-info">共 <strong>${total}</strong> 条，显示 ${start}-${end}</div>
+    <div class="list-pager-controls">
+      <label>
+        每页
+        <select onchange="changeRankPageSize(this.value)">
+          <option value="10" ${rankPageSize === 10 ? 'selected' : ''}>10</option>
+          <option value="20" ${rankPageSize === 20 ? 'selected' : ''}>20</option>
+          <option value="50" ${rankPageSize === 50 ? 'selected' : ''}>50</option>
+        </select>
+      </label>
+      <button class="btn btn-outline btn-sm" ${rankPage <= 1 ? 'disabled' : ''} onclick="changeRankPage(${rankPage - 1})">上一页</button>
+      <div class="list-pager-pages">${pageBtns}</div>
+      <button class="btn btn-outline btn-sm" ${rankPage >= totalPages ? 'disabled' : ''} onclick="changeRankPage(${rankPage + 1})">下一页</button>
+    </div>
+  </div>`;
+}
+
+// === Helpers ===
+
+function statusText(status) {
+  const map = { 'active': '活跃', 'error': '异常', 'unknown': '未知' };
+  return map[status] || status;
+}
+
+function timeAgo(date) {
+  const now = new Date();
+  const diff = (now - date) / 1000;
+  if (diff < 60) return '刚刚';
+  if (diff < 3600) return Math.floor(diff / 60) + ' 分钟前';
+  if (diff < 86400) return Math.floor(diff / 3600) + ' 小时前';
+  return Math.floor(diff / 86400) + ' 天前';
+}
+
+function escapeHtml(text) {
+  if (!text) return '';
+  const d = document.createElement('div');
+  d.textContent = text;
+  return d.innerHTML;
+}
+
+function openAddModal() {
+  document.getElementById('addModal').classList.add('active');
+  document.getElementById('addEmail').focus();
+}
+
+function openImportModal() {
+  document.getElementById('importModal').classList.add('active');
+  document.getElementById('importText').focus();
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('active');
+  if (id === 'detailModal') detailAccountId = null;
+}
+
+function showToast(message, type = 'info') {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type}`;
+  toast.textContent = message;
+  container.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) overlay.classList.remove('active');
+  });
+});
+
+// Close modals on Escape
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    document.querySelectorAll('.modal-overlay.active').forEach(m => m.classList.remove('active'));
+    detailAccountId = null;
+  }
+});
+
+// Init
+fetchAccounts(true);
+
+// 每 5 秒自动刷新列表（与本地同步频率一致；无变化不重绘）
+setInterval(() => fetchAccounts(false), 5 * 1000);
+</script>
+</body>
+</html>

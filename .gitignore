@@ -1,0 +1,22 @@
+# Binaries
+cursor-admin
+cursor-admin.exe*
+
+# Data files
+accounts.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Go build cache
+/vendor/
+
+# log files
+*.log
