@@ -22,3 +22,6 @@ Thumbs.db
 
 # log files
 *.log
+
+dist/
+cursor-account-admin.exe
