@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"cursor-admin/internal/model"
+	"cursor-account-admin/internal/model"
 )
 
 // === Mock implementations ===

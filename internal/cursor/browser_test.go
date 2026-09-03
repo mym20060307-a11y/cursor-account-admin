@@ -1,7 +1,7 @@
 package cursor
 
 import (
-	"cursor-admin/internal/model"
+	"cursor-account-admin/internal/model"
 	"testing"
 )
 

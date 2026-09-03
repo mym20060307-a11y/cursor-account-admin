@@ -8,9 +8,9 @@ import (
 	"net/http"
 	"time"
 
-	"cursor-admin/internal/handler"
-	"cursor-admin/internal/localsync"
-	"cursor-admin/internal/store"
+	"cursor-account-admin/internal/handler"
+	"cursor-account-admin/internal/localsync"
+	"cursor-account-admin/internal/store"
 )
 
 //go:embed web/index.html

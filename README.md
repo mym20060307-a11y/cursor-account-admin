@@ -1,4 +1,4 @@
-# Cursor Admin
+# Cursor Account Admin
 
 本地 Web 管理面板：集中管理多个 Cursor 账号，查看用量 / Token / 成本，并一键切换本机 Cursor 登录态。
 
@@ -35,29 +35,29 @@
 
 ```bash
 # 进入项目目录
-cd cursor-admin-master
+cd cursor-account-admin
 
 # 编译（Windows）
-go build -o cursor-admin.exe .
+go build -o cursor-account-admin.exe .
 
 # 编译（macOS / Linux）
-go build -o cursor-admin .
+go build -o cursor-account-admin .
 
 # 运行（默认端口 9999，数据文件 accounts.json）
-./cursor-admin.exe
+./cursor-account-admin.exe
 
 # 自定义端口与数据文件
-./cursor-admin.exe -port 9090 -data mydata.json
+./cursor-account-admin.exe -port 9090 -data mydata.json
 
 # 关闭本地 Cursor 账号自动同步
-./cursor-admin.exe -sync-interval 0
+./cursor-account-admin.exe -sync-interval 0
 ```
 
 Windows 也可使用脚本：
 
 ```bat
 start.bat   # 后台启动并打开浏览器
-stop.bat    # 结束 cursor-admin.exe
+stop.bat    # 结束 cursor-account-admin.exe
 ```
 
 浏览器打开：**http://localhost:9999**
@@ -81,7 +81,7 @@ stop.bat    # 结束 cursor-admin.exe
 若用 `start.bat` 或在本仓库根目录启动，即为：
 
 ```text
-c:\Users\...\cursor-admin-master\accounts.json
+c:\Users\...\cursor-account-admin\accounts.json
 ```
 
 该文件含邮箱、密码（若填写）、Session Token、用量缓存等敏感信息。仓库 `.gitignore` 已忽略 `accounts.json`，**发布到 GitHub 前请确认不会误提交**。
@@ -176,7 +176,7 @@ curl -X POST http://localhost:9999/api/refresh-all
 ## 项目结构
 
 ```text
-cursor-admin-master/
+cursor-account-admin/
 ├── main.go                 # 入口：参数、启动 HTTP、嵌入前端
 ├── go.mod / go.sum
 ├── start.bat / stop.bat    # Windows 启停脚本

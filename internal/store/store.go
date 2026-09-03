@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"cursor-admin/internal/model"
+	"cursor-account-admin/internal/model"
 )
 
 // Store manages account persistence using a JSON file.

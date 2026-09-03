@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"cursor-admin/internal/model"
+	"cursor-account-admin/internal/model"
 )
 
 func newTestStore(t *testing.T) (*Store, string) {

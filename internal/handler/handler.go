@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	"cursor-admin/internal/cursor"
-	"cursor-admin/internal/model"
+	"cursor-account-admin/internal/cursor"
+	"cursor-account-admin/internal/model"
 )
 
 // AccountStore defines the interface for account storage operations.

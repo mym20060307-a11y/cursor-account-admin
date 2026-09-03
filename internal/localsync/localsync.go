@@ -5,8 +5,8 @@ import (
 	"strings"
 	"time"
 
-	"cursor-admin/internal/cursor"
-	"cursor-admin/internal/model"
+	"cursor-account-admin/internal/cursor"
+	"cursor-account-admin/internal/model"
 )
 
 // usageRefreshEvery controls how often we re-query Cursor usage API for an

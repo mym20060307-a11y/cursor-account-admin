@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"cursor-admin/internal/model"
+	"cursor-account-admin/internal/model"
 )
 
 const (
@@ -92,7 +92,7 @@ func doCursorPOST(client *http.Client, url, sessionToken, jsonBody string) ([]by
 
 func setCursorHeaders(req *http.Request, sessionToken string) {
 	req.Header.Set("Cookie", "WorkosCursorSessionToken="+sessionToken)
-	req.Header.Set("User-Agent", "Mozilla/5.0 (compatible; cursor-admin/1.0)")
+	req.Header.Set("User-Agent", "Mozilla/5.0 (compatible; cursor-account-admin/1.0)")
 	req.Header.Set("Accept", "application/json")
 }
 

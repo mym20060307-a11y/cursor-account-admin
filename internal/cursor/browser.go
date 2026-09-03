@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	"cursor-admin/internal/model"
+	"cursor-account-admin/internal/model"
 
 	"github.com/chromedp/cdproto/network"
 	"github.com/chromedp/cdproto/page"
@@ -494,7 +494,7 @@ func newBrowserContext(headless bool) (context.Context, context.CancelFunc, erro
 	// chromedp's Allocate fails but leaves a cleanup goroutine that closes
 	// c.allocated; a subsequent Run then re-triggers Allocate on the same context,
 	// causing "close of closed channel" panic. Unique temp dirs prevent this entirely.
-	tempDir, err := os.MkdirTemp("", "cursor-admin-chrome-*")
+	tempDir, err := os.MkdirTemp("", "cursor-account-admin-chrome-*")
 	if err != nil {
 		return nil, nil, fmt.Errorf("创建临时目录失败: %w", err)
 	}

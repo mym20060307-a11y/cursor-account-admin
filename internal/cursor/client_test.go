@@ -3,7 +3,7 @@ package cursor
 import (
 	"testing"
 
-	"cursor-admin/internal/model"
+	"cursor-account-admin/internal/model"
 )
 
 func TestParseUsageSummaryJSON_FreePlan(t *testing.T) {

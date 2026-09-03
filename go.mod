@@ -1,4 +1,4 @@
-module cursor-admin
+module cursor-account-admin
 
 go 1.25.0
 
